@@ -39,6 +39,7 @@
 
 html {
   @apply min-h-full;
+  touch-action: manipulation;
 }
 
 body {
