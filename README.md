@@ -36,7 +36,7 @@ LILYLOG is a self-hosted, production-oriented plant journaling and monitoring ap
    ```
 
 3. Access:
-   - App: `http://localhost:4173` (nginx gateway routes `/` to frontend, `/api` and `/media` to backend)
+   - App: `http://localhost:4173` (single service serves UI, `/api`, and `/media`)
    - Backend API docs: `http://localhost:8000/docs`
 
 ## Persistence
@@ -125,7 +125,7 @@ This does not include photos. Use `scripts/backup.sh` on the host for complete b
 ## Notes
 
 - Place production TLS/reverse proxy in front if required; app is compatible with Tailscale Serve.
-- With Tailscale Serve, point one HTTPS route at the gateway port (default `4173`). You do not need separate `/api` or `/media` routes in Tailscale — the built-in nginx gateway handles those.
+- With Tailscale Serve, point one HTTPS route at the app port (default `4173`). One port serves the UI, `/api`, and `/media` — no separate Tailscale paths needed.
 - Example Tailscale setup on the server:
 
   ```bash

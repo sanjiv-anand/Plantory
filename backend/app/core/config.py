@@ -32,10 +32,17 @@ class Settings(BaseSettings):
     webauthn_rp_id: str = "localhost"
     webauthn_rp_name: str = "LILYLOG"
     webauthn_origin: str = "http://localhost:5173"
+    static_dir: str | None = None
 
     @property
     def photos_root_path(self) -> Path:
         return Path(self.photos_root)
+
+    @property
+    def static_dir_path(self) -> Path | None:
+        if not self.static_dir:
+            return None
+        return Path(self.static_dir)
 
 
 settings = Settings()

@@ -17,6 +17,19 @@ export function setUnauthorizedHandler(handler: (() => void) | null) {
   onUnauthorized = handler
 }
 
+function parseJsonBody<T>(body: string): T {
+  try {
+    return JSON.parse(body) as T
+  } catch {
+    if (body.trimStart().startsWith('<!')) {
+      throw new Error(
+        'The app could not reach the API (got HTML instead of JSON). Rebuild with docker compose up -d --build and open the app on the same URL Tailscale serves.',
+      )
+    }
+    throw new Error('Unexpected response from server.')
+  }
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${API_URL}${path}`, {
     credentials: 'include',
@@ -25,25 +38,29 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   if (response.status === 401) {
     onUnauthorized?.()
   }
+  if (response.status === 204) {
+    return undefined as T
+  }
+
+  const body = await response.text()
   if (!response.ok) {
-    const detail = await response.text()
-    let message = detail || `Request failed: ${response.status}`
+    let message = body || `Request failed: ${response.status}`
     try {
-      const parsed = JSON.parse(detail) as { detail?: string | Array<{ msg?: string }> }
+      const parsed = parseJsonBody<{ detail?: string | Array<{ msg?: string }> }>(body)
       if (typeof parsed.detail === 'string') {
         message = parsed.detail
       } else if (Array.isArray(parsed.detail) && parsed.detail.length) {
         message = parsed.detail.map((item) => item.msg).filter(Boolean).join('. ')
       }
-    } catch {
-      // Response body was not JSON.
+    } catch (err) {
+      if (err instanceof Error && err.message.includes('could not reach the API')) {
+        throw err
+      }
     }
     throw new Error(message)
   }
-  if (response.status === 204) {
-    return undefined as T
-  }
-  return (await response.json()) as T
+
+  return parseJsonBody<T>(body)
 }
 
 export const client = {

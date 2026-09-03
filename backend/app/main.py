@@ -29,3 +29,7 @@ def healthcheck() -> dict[str, str]:
 
 app.mount(settings.photos_public_base, StaticFiles(directory=settings.photos_root), name="media")
 app.include_router(api_router, prefix="/api")
+
+static_root = settings.static_dir_path
+if static_root and static_root.is_dir():
+    app.mount("/", StaticFiles(directory=static_root, html=True), name="frontend")
