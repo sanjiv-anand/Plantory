@@ -9,6 +9,60 @@ from app.core.config import settings
 
 
 class WeatherClient:
+    async def fetch_forecast(self, latitude: float, longitude: float, *, forecast_days: int = 7) -> dict:
+        params = {
+            "latitude": latitude,
+            "longitude": longitude,
+            "daily": "temperature_2m_max,temperature_2m_min,precipitation_sum,weather_code,sunrise,sunset",
+            "timezone": "auto",
+            "forecast_days": forecast_days,
+        }
+        async with httpx.AsyncClient(timeout=settings.weather_timeout_seconds) as client:
+            response = await client.get(settings.weather_api_url, params=params)
+            response.raise_for_status()
+            payload = response.json()
+
+        daily = payload.get("daily", {})
+        dates = daily.get("time") or []
+        days = []
+        for index, date in enumerate(dates):
+            days.append(
+                {
+                    "date": date,
+                    "temp_max": (daily.get("temperature_2m_max") or [None])[index],
+                    "temp_min": (daily.get("temperature_2m_min") or [None])[index],
+                    "precipitation": (daily.get("precipitation_sum") or [None])[index],
+                    "weather_code": (daily.get("weather_code") or [None])[index],
+                    "sunrise": (daily.get("sunrise") or [None])[index],
+                    "sunset": (daily.get("sunset") or [None])[index],
+                }
+            )
+
+        alerts = []
+        for day in days[:3]:
+            temp_min = day.get("temp_min")
+            temp_max = day.get("temp_max")
+            if temp_min is not None and temp_min <= 2:
+                alerts.append(
+                    {
+                        "type": "frost",
+                        "severity": "warning",
+                        "date": day["date"],
+                        "message": f"Frost risk on {day['date']}: low of {temp_min:.0f}°C. Move sensitive plants indoors or cover them.",
+                    }
+                )
+            if temp_max is not None and temp_max >= 35:
+                alerts.append(
+                    {
+                        "type": "heat",
+                        "severity": "warning",
+                        "date": day["date"],
+                        "message": f"Heat alert on {day['date']}: high of {temp_max:.0f}°C. Increase watering and provide shade.",
+                    }
+                )
+
+        return {"days": days, "alerts": alerts}
+
     async def fetch(self, latitude: float, longitude: float) -> dict:
         params = {
             "latitude": latitude,

@@ -49,13 +49,63 @@ Docker volumes:
 
 ## Backups
 
-Run a manual backup inside the backend container:
+LILYLOG stores photos on disk and metadata in PostgreSQL, so a full backup includes both.
+
+### Full backup (recommended)
+
+From the project root on the host:
+
+```bash
+chmod +x scripts/backup.sh scripts/restore.sh
+./scripts/backup.sh
+```
+
+This writes timestamped files to `~/lilylog-backups` by default:
+
+- `lilylog_YYYYMMDD_HHMMSS.sql` — database dump
+- `photos_YYYYMMDD_HHMMSS.tar.gz` — photo volume archive
+
+Configure in `.env`:
+
+- `BACKUP_HOST_DIR` — where host backups are stored
+- `BACKUP_RETENTION_DAYS` — auto-delete older backups (default `14`, set `0` to keep all)
+
+### Nightly automatic backup
+
+Schedule the same script with cron on Linux:
+
+```bash
+crontab -e
+```
+
+Example: run every night at 2:00 AM:
+
+```cron
+0 2 * * * /path/to/LilyLog/scripts/backup.sh >> /var/log/lilylog-backup.log 2>&1
+```
+
+On macOS, prefer `launchd` if the machine may sleep.
+
+Optional: sync `BACKUP_HOST_DIR` off the server with `rsync`, `rclone`, or `restic`.
+
+### Restore
+
+```bash
+./scripts/restore.sh --db ~/lilylog-backups/lilylog_20260903_020000.sql
+./scripts/restore.sh --photos ~/lilylog-backups/photos_20260903_020000.tar.gz
+```
+
+Restore both together when recovering from a full loss.
+
+### Database-only backup (inside container)
+
+Quick DB dump to the Docker `backups_data` volume:
 
 ```bash
 docker compose exec backend sh scripts/backup.sh
 ```
 
-This writes timestamped `.sql` dumps to the backups volume.
+This does not include photos. Use `scripts/backup.sh` on the host for complete backups.
 
 ## API overview
 

@@ -3,34 +3,306 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
   font-family: Inter, system-ui, -apple-system, Segoe UI, sans-serif;
+  --bg-page: #f2f2f7;
+  --bg-card: #ffffff;
+  --bg-card-inner: #f5f5f7;
+  --bg-nav: rgba(255, 255, 255, 0.92);
+  --text-primary: #111111;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+  --border: rgba(0, 0, 0, 0.08);
+  --accent: #22c55e;
+  --accent-text: #052e16;
+  --accent-soft: rgba(34, 197, 94, 0.14);
+  --shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+  --radius-card: 20px;
+  --radius-inner: 14px;
+}
+
+.dark {
+  color-scheme: dark;
+  --bg-page: #000000;
+  --bg-card: #1c1c1e;
+  --bg-card-inner: #2c2c2e;
+  --bg-nav: rgba(0, 0, 0, 0.94);
+  --text-primary: #ffffff;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+  --border: rgba(255, 255, 255, 0.08);
+  --accent: #22c55e;
+  --accent-text: #052e16;
+  --accent-soft: rgba(34, 197, 94, 0.18);
+  --shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+}
+
+html {
+  @apply min-h-full;
 }
 
 body {
-  @apply bg-slate-950 text-slate-100 m-0;
+  @apply m-0 min-h-screen antialiased;
+  background: var(--bg-page);
+  color: var(--text-primary);
+}
+
+#root {
+  @apply min-h-screen;
+}
+
+.app-shell {
+  @apply mx-auto flex min-h-screen w-full max-w-[430px] flex-col;
+}
+
+.app-main {
+  @apply flex-1 px-4 pb-28 pt-2;
 }
 
 .card {
-  @apply rounded-2xl border border-slate-800 bg-slate-900/70 shadow-sm;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  box-shadow: var(--shadow);
 }
 
-.input {
-  @apply w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-100 outline-none focus:ring-2 focus:ring-emerald-500;
+.card-inner {
+  border-radius: var(--radius-inner);
+  background: var(--bg-card-inner);
 }
 
 .label {
-  @apply text-xs font-medium uppercase tracking-wide text-slate-400;
+  @apply text-[11px] font-semibold uppercase tracking-[0.18em];
+  color: var(--text-muted);
+}
+
+.input {
+  @apply w-full rounded-2xl px-4 py-3 text-sm outline-none transition;
+  border: 1px solid var(--border);
+  background: var(--bg-card-inner);
+  color: var(--text-primary);
+}
+
+.input::placeholder {
+  color: var(--text-muted);
+}
+
+.input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-soft);
 }
 
 .btn {
-  @apply inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-semibold transition;
+  @apply inline-flex items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60;
 }
 
 .btn-primary {
-  @apply btn bg-emerald-500 text-emerald-950 hover:bg-emerald-400;
+  @apply btn;
+  background: var(--accent);
+  color: var(--accent-text);
 }
 
 .btn-secondary {
-  @apply btn border border-slate-700 text-slate-200 hover:bg-slate-800;
+  @apply btn border;
+  border-color: var(--border);
+  background: var(--bg-card-inner);
+  color: var(--text-primary);
+}
+
+.btn-ghost {
+  @apply btn;
+  color: var(--text-secondary);
+}
+
+.btn-icon {
+  @apply inline-flex h-10 w-10 items-center justify-center rounded-full transition;
+  background: var(--bg-card-inner);
+  color: var(--text-primary);
+}
+
+.nav-bar {
+  @apply fixed bottom-0 left-1/2 z-50 w-full max-w-[430px] -translate-x-1/2 border-t px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2;
+  border-color: var(--border);
+  background: var(--bg-nav);
+  backdrop-filter: blur(12px);
+}
+
+.nav-item {
+  @apply flex flex-1 flex-col items-center gap-1 py-1 text-[11px] font-medium;
+  color: var(--text-muted);
+}
+
+.nav-item-active {
+  color: var(--accent);
+}
+
+.nav-fab {
+  @apply -mt-5 flex h-14 w-14 items-center justify-center rounded-full shadow-lg;
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+::selection {
+  background: var(--accent-soft);
+  color: var(--text-primary);
+}
+
+.photo-dropzone {
+  @apply flex min-h-52 flex-col items-center justify-center rounded-[20px] border-2 border-dashed px-6 py-8 text-center transition active:scale-[0.99];
+  border-color: color-mix(in oklab, var(--accent), transparent 55%);
+  background: color-mix(in oklab, var(--accent-soft), transparent 20%);
+}
+
+.segment-tabs {
+  @apply grid grid-cols-4 gap-1 rounded-2xl p-1;
+  background: var(--bg-card-inner);
+}
+
+.segment-tab {
+  @apply rounded-xl px-2 py-2.5 text-xs font-semibold transition sm:px-3 sm:text-sm;
+  color: var(--text-muted);
+}
+
+.segment-tab-active {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  box-shadow: var(--shadow);
+}
+
+.journal-card {
+  border-radius: 24px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  box-shadow: var(--shadow);
+}
+
+.journal-upload-hero {
+  @apply flex min-h-[320px] flex-col items-center justify-center px-6 py-10 text-center transition active:scale-[0.995];
+  background:
+    radial-gradient(circle at top, color-mix(in oklab, var(--accent-soft), transparent 35%), transparent 55%),
+    var(--bg-card-inner);
+}
+
+.journal-upload-icon {
+  @apply mb-4 flex h-16 w-16 items-center justify-center rounded-[22px];
+  background: var(--accent-soft);
+  color: var(--accent);
+  box-shadow: 0 12px 30px color-mix(in oklab, var(--accent), transparent 75%);
+}
+
+.journal-upload-title {
+  @apply text-xl font-bold tracking-tight;
+  color: var(--text-primary);
+}
+
+.journal-upload-copy {
+  @apply mt-2 max-w-[240px] text-sm leading-6;
+  color: var(--text-secondary);
+}
+
+.journal-photo-frame {
+  @apply relative overflow-hidden;
+  background: var(--bg-card-inner);
+}
+
+.journal-photo {
+  @apply block max-h-[420px] w-full object-cover;
+}
+
+.journal-photo-badge {
+  @apply absolute left-4 top-4 inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold;
+  background: rgba(0, 0, 0, 0.55);
+  color: #ffffff;
+  backdrop-filter: blur(8px);
+}
+
+.journal-change-photo {
+  @apply absolute bottom-4 right-4 inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold;
+  background: rgba(0, 0, 0, 0.55);
+  color: #ffffff;
+  backdrop-filter: blur(8px);
+}
+
+.journal-body {
+  @apply p-5;
+}
+
+.journal-title {
+  @apply mt-1 text-xl font-bold tracking-tight;
+  color: var(--text-primary);
+}
+
+.journal-subtitle {
+  @apply mt-1 text-sm;
+  color: var(--text-secondary);
+}
+
+.journal-note-preview {
+  @apply text-sm leading-7;
+  color: var(--text-secondary);
+}
+
+.journal-textarea {
+  @apply w-full resize-none rounded-[18px] px-4 py-4 text-sm leading-6 outline-none transition;
+  border: 1px solid var(--border);
+  background: var(--bg-card-inner);
+  color: var(--text-primary);
+}
+
+.journal-textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-soft);
+}
+
+.journal-textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.journal-care-row {
+  @apply flex flex-wrap gap-2;
+}
+
+.journal-care-tile {
+  @apply flex flex-col items-center justify-center gap-2 rounded-[18px] px-4 py-4 text-sm font-semibold transition;
+  border: 1px solid var(--border);
+  background: var(--bg-card-inner);
+  color: var(--text-secondary);
+}
+
+.journal-care-tile-active {
+  background: var(--accent);
+  border-color: transparent;
+  color: var(--accent-text);
+}
+
+.journal-details-toggle {
+  @apply flex w-full items-center justify-between rounded-[18px] px-4 py-3.5 text-sm font-semibold;
+  background: var(--bg-card-inner);
+  color: var(--text-primary);
+}
+
+.journal-metric {
+  @apply block rounded-[16px] p-3;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+}
+
+.journal-metric-label {
+  @apply mb-2 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.16em];
+  color: var(--text-muted);
+}
+
+.journal-metric-input {
+  @apply w-full bg-transparent text-sm font-semibold outline-none;
+  color: var(--text-primary);
+}
+
+.journal-metric-input::placeholder {
+  color: var(--text-muted);
+}
+
+.journal-save-bar {
+  @apply border-t px-5 py-4;
+  border-color: var(--border);
+  background: color-mix(in oklab, var(--bg-card), var(--bg-card-inner) 35%);
 }

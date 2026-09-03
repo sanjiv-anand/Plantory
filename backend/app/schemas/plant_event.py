@@ -10,7 +10,7 @@ class PlantEventCreate(BaseModel):
     event_date: date
     title: str
     description: str | None = None
-    metadata: dict | None = None
+    event_metadata: dict | None = None
 
 
 class PlantEventRead(PlantEventCreate):

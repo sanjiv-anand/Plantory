@@ -81,6 +81,6 @@ export type PlantEvent = {
   event_date: string
   title: string
   description?: string | null
-  metadata?: Record<string, unknown> | null
+  event_metadata?: Record<string, unknown> | null
   created_at: string
 }

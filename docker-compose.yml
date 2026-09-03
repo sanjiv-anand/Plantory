@@ -8,7 +8,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       POSTGRES_HOST_AUTH_METHOD: trust
     ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+      - "${POSTGRES_PORT:-5433}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -37,6 +37,12 @@ services:
       WEATHER_API_URL: ${WEATHER_API_URL:-https://api.open-meteo.com/v1/forecast}
       WEATHER_TIMEOUT_SECONDS: ${WEATHER_TIMEOUT_SECONDS:-10}
       BACKUP_DIR: ${BACKUP_DIR:-/data/backups}
+      POSTGRES_DB: ${POSTGRES_DB:-lilylog}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      SECRET_KEY: ${SECRET_KEY:-change-me-in-production}
+      WEBAUTHN_RP_ID: ${WEBAUTHN_RP_ID:-localhost}
+      WEBAUTHN_RP_NAME: ${WEBAUTHN_RP_NAME:-LILYLOG}
+      WEBAUTHN_ORIGIN: ${WEBAUTHN_ORIGIN:-http://localhost:4173}
     ports:
       - "${BACKEND_PORT:-8000}:8000"
     volumes:

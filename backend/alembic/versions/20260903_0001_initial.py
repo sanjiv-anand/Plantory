@@ -118,7 +118,7 @@ def upgrade() -> None:
         sa.Column("event_date", sa.Date(), nullable=False),
         sa.Column("title", sa.String(length=200), nullable=False),
         sa.Column("description", sa.Text(), nullable=True),
-        sa.Column("metadata", sa.JSON(), nullable=True),
+        sa.Column("event_metadata", sa.JSON(), nullable=True),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False),
         sa.ForeignKeyConstraint(["plant_id"], ["plants.id"], ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("id"),

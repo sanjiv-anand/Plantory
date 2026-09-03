@@ -27,6 +27,12 @@ class Settings(BaseSettings):
 
     backup_dir: str = "/data/backups"
 
+    secret_key: str = "change-me-in-production"
+    session_days: int = 14
+    webauthn_rp_id: str = "localhost"
+    webauthn_rp_name: str = "LILYLOG"
+    webauthn_origin: str = "http://localhost:5173"
+
     @property
     def photos_root_path(self) -> Path:
         return Path(self.photos_root)

@@ -12,17 +12,22 @@ export function CalendarView({ entries }: { entries: JournalEntry[] }) {
   const rows = [...byDate.entries()].sort((a, b) => (a[0] > b[0] ? -1 : 1))
 
   return (
-    <section className="card p-4">
-      <h3 className="mb-3 text-lg font-semibold">Calendar history</h3>
+    <section className="card p-5">
+      <p className="label">Journal</p>
+      <h3 className="mt-1 mb-4 text-base font-semibold" style={{ color: 'var(--text-primary)' }}>
+        Calendar history
+      </h3>
       <div className="space-y-2 text-sm">
         {rows.map(([day, dayEntries]) => (
-          <div key={day} className="flex items-center justify-between rounded-xl border border-slate-700 px-3 py-2">
-            <span>{format(new Date(day), 'PPP')}</span>
-            <span className="text-slate-400">{dayEntries.length} entr{dayEntries.length > 1 ? 'ies' : 'y'}</span>
+          <div key={day} className="card-inner flex items-center justify-between px-4 py-3">
+            <span style={{ color: 'var(--text-primary)' }}>{format(new Date(day), 'PPP')}</span>
+            <span style={{ color: 'var(--text-muted)' }}>
+              {dayEntries.length} entr{dayEntries.length > 1 ? 'ies' : 'y'}
+            </span>
           </div>
         ))}
       </div>
-      {!rows.length && <p className="text-sm text-slate-400">No calendar items yet.</p>}
+      {!rows.length && <p className="text-sm" style={{ color: 'var(--text-muted)' }}>No calendar items yet.</p>}
     </section>
   )
 }

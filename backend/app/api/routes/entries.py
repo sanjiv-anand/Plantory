@@ -15,6 +15,18 @@ from app.services.weather_service import weather_client
 router = APIRouter()
 
 
+def _optional_float(value: str | None) -> float | None:
+    if value is None or not value.strip():
+        return None
+    return float(value)
+
+
+def _optional_int(value: str | None) -> int | None:
+    if value is None or not value.strip():
+        return None
+    return int(value)
+
+
 def _must_get_plant(db: Session, plant_id: int) -> Plant:
     plant = db.get(Plant, plant_id)
     if not plant:
@@ -41,9 +53,9 @@ async def create_entry(
     title: str | None = Form(None),
     memory: str | None = Form(None),
     observation: str | None = Form(None),
-    height_cm: float | None = Form(None),
-    leaf_count: int | None = Form(None),
-    flower_count: int | None = Form(None),
+    height_cm: str | None = Form(None),
+    leaf_count: str | None = Form(None),
+    flower_count: str | None = Form(None),
     watering_done: bool = Form(False),
     fertilized: bool = Form(False),
     tags: str | None = Form(None),
@@ -61,9 +73,9 @@ async def create_entry(
         title=title,
         memory=memory,
         observation=observation,
-        height_cm=height_cm,
-        leaf_count=leaf_count,
-        flower_count=flower_count,
+        height_cm=_optional_float(height_cm),
+        leaf_count=_optional_int(leaf_count),
+        flower_count=_optional_int(flower_count),
         watering_done=watering_done,
         fertilized=fertilized,
         tags=parsed_tags,

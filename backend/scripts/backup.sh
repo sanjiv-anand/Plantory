@@ -2,5 +2,10 @@
 set -eu
 
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-mkdir -p "${BACKUP_DIR:-/data/backups}"
-pg_dump "${DATABASE_URL:?DATABASE_URL is required}" > "${BACKUP_DIR:-/data/backups}/lilylog_${TIMESTAMP}.sql"
+BACKUP_DIR="${BACKUP_DIR:-/data/backups}"
+PGHOST="${POSTGRES_HOST:-postgres}"
+PGUSER="${POSTGRES_USER:-postgres}"
+PGDATABASE="${POSTGRES_DB:-lilylog}"
+
+mkdir -p "$BACKUP_DIR"
+pg_dump -h "$PGHOST" -U "$PGUSER" "$PGDATABASE" > "${BACKUP_DIR}/lilylog_${TIMESTAMP}.sql"

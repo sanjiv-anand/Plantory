@@ -1,12 +1,62 @@
+from datetime import UTC, datetime
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 
 from app.api.deps import get_db
+from app.models.journal_entry import JournalEntry
 from app.models.plant import Plant
+from app.models.plant_event import PlantEvent
 from app.schemas.plant import PlantCreate, PlantRead, PlantUpdate
 
 router = APIRouter()
+
+
+@router.get("/export")
+def export_garden(db: Session = Depends(get_db)) -> dict:
+    plants = list(db.scalars(select(Plant).order_by(Plant.created_at.desc())))
+    entries = list(
+        db.scalars(
+            select(JournalEntry)
+            .options(selectinload(JournalEntry.weather_snapshot))
+            .order_by(JournalEntry.captured_at.desc())
+        )
+    )
+    events = list(db.scalars(select(PlantEvent).order_by(PlantEvent.event_date.desc())))
+    return {
+        "version": 1,
+        "exported_at": datetime.now(UTC).isoformat(),
+        "plants": [PlantRead.model_validate(plant).model_dump(mode="json") for plant in plants],
+        "entries": [
+            {
+                "id": entry.id,
+                "plant_id": entry.plant_id,
+                "captured_at": entry.captured_at.isoformat(),
+                "title": entry.title,
+                "memory": entry.memory,
+                "observation": entry.observation,
+                "height_cm": float(entry.height_cm) if entry.height_cm is not None else None,
+                "leaf_count": entry.leaf_count,
+                "flower_count": entry.flower_count,
+                "watering_done": entry.watering_done,
+                "fertilized": entry.fertilized,
+                "tags": entry.tags,
+            }
+            for entry in entries
+        ],
+        "events": [
+            {
+                "id": event.id,
+                "plant_id": event.plant_id,
+                "event_type": event.event_type.value,
+                "event_date": event.event_date.isoformat(),
+                "title": event.title,
+                "description": event.description,
+            }
+            for event in events
+        ],
+    }
 
 
 @router.get("", response_model=list[PlantRead])

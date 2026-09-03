@@ -35,7 +35,11 @@ class Plant(Base, TimestampMixin):
     sunlight_description: Mapped[str | None] = mapped_column(Text)
     watering_notes: Mapped[str | None] = mapped_column(Text)
     notes: Mapped[str | None] = mapped_column(Text)
-    status: Mapped[PlantStatus] = mapped_column(Enum(PlantStatus), default=PlantStatus.active, nullable=False)
+    status: Mapped[PlantStatus] = mapped_column(
+        Enum(PlantStatus, name="plantstatus", values_callable=lambda x: [e.value for e in x]),
+        default=PlantStatus.active,
+        nullable=False,
+    )
     cover_photo_id: Mapped[int | None] = mapped_column(ForeignKey("journal_entries.id", ondelete="SET NULL"), nullable=True)
 
     entries: Mapped[list["JournalEntry"]] = relationship(
