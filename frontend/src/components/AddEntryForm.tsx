@@ -1,5 +1,5 @@
 import { format } from 'date-fns'
-import { type FormEvent, useMemo, useState } from 'react'
+import { type FormEvent, useEffect, useMemo, useRef, useState } from 'react'
 
 import { useCreateEntry } from '../hooks/useApi'
 
@@ -11,8 +11,8 @@ const nowLocal = () => format(new Date(), "yyyy-MM-dd'T'HH:mm")
 
 export function AddEntryForm({ plantId }: Props) {
   const createEntry = useCreateEntry(plantId)
-  const [previewUrl, setPreviewUrl] = useState<string>()
   const [file, setFile] = useState<File>()
+  const canvasRef = useRef<HTMLCanvasElement>(null)
   const [state, setState] = useState({
     captured_local: nowLocal(),
     title: '',
@@ -27,6 +27,36 @@ export function AddEntryForm({ plantId }: Props) {
   })
 
   const disabled = useMemo(() => createEntry.isPending || !file, [createEntry.isPending, file])
+
+  useEffect(() => {
+    if (!file || !canvasRef.current) {
+      return
+    }
+    let isCancelled = false
+    createImageBitmap(file)
+      .then((bitmap) => {
+        if (isCancelled || !canvasRef.current) return
+        const canvas = canvasRef.current
+        const maxWidth = 900
+        const ratio = bitmap.width > maxWidth ? maxWidth / bitmap.width : 1
+        canvas.width = Math.max(1, Math.round(bitmap.width * ratio))
+        canvas.height = Math.max(1, Math.round(bitmap.height * ratio))
+        const ctx = canvas.getContext('2d')
+        if (!ctx) return
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+        ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height)
+        bitmap.close()
+      })
+      .catch(() => {
+        if (!canvasRef.current) return
+        const ctx = canvasRef.current.getContext('2d')
+        if (!ctx) return
+        ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)
+      })
+    return () => {
+      isCancelled = true
+    }
+  }, [file])
 
   async function onSubmit(event: FormEvent) {
     event.preventDefault()
@@ -46,7 +76,6 @@ export function AddEntryForm({ plantId }: Props) {
 
     await createEntry.mutateAsync(form)
     setFile(undefined)
-    setPreviewUrl(undefined)
     setState({
       captured_local: nowLocal(),
       title: '',
@@ -73,11 +102,10 @@ export function AddEntryForm({ plantId }: Props) {
           onChange={(event) => {
             const picked = event.target.files?.[0]
             setFile(picked)
-            if (picked) setPreviewUrl(URL.createObjectURL(picked))
           }}
           required
         />
-        {previewUrl && <img src={previewUrl} alt="Preview" className="h-60 w-full rounded-xl object-cover" />}
+        {file && <canvas ref={canvasRef} className="w-full rounded-xl bg-slate-900/60" aria-label="Photo preview" />}
         <input className="input" type="datetime-local" value={state.captured_local} onChange={(e) => setState((s) => ({ ...s, captured_local: e.target.value }))} />
         <input className="input" placeholder="Optional title" value={state.title} onChange={(e) => setState((s) => ({ ...s, title: e.target.value }))} />
         <textarea className="input min-h-20" placeholder="Memory / journal" value={state.memory} onChange={(e) => setState((s) => ({ ...s, memory: e.target.value }))} />
