@@ -31,7 +31,7 @@ export function LockScreen() {
             alt="LilyLog"
             className="mx-auto mb-5 h-20 w-20 rounded-[22%] shadow-lg"
             height={80}
-            src="/logo.png"
+            src="/icon-192.png"
             width={80}
           />
 
