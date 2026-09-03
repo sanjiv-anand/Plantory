@@ -3,8 +3,8 @@ import type {
   PublicKeyCredentialRequestOptionsJSON,
 } from '@simplewebauthn/browser'
 
-const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000/api'
-const MEDIA_URL = import.meta.env.VITE_MEDIA_URL ?? 'http://localhost:8000'
+const API_URL = import.meta.env.VITE_API_URL ?? (import.meta.env.DEV ? 'http://localhost:8000/api' : '/api')
+const MEDIA_URL = import.meta.env.VITE_MEDIA_URL ?? (import.meta.env.DEV ? 'http://localhost:8000' : '')
 
 export const api = {
   API_URL,

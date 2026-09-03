@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from webauthn.helpers.exceptions import InvalidAuthenticationResponse, InvalidRegistrationResponse
 
 from app.api.deps import get_current_user, get_db
+from app.core.config import settings
 from app.models.app_user import AppUser
 from app.schemas.auth import AuthOptionsResponse, AuthStatus, AuthVerifyRequest, RegisterOptionsRequest, UpdateProfileRequest
 from app.services import auth_service
@@ -16,7 +17,7 @@ def _set_session_cookie(response: Response, user_id: int) -> None:
         key=auth_service.SESSION_COOKIE,
         value=token,
         httponly=True,
-        secure=False,
+        secure=settings.webauthn_origin.startswith("https://"),
         samesite="lax",
         max_age=60 * 60 * 24 * 7,
         path="/",

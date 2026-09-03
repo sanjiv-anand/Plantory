@@ -36,7 +36,7 @@ LILYLOG is a self-hosted, production-oriented plant journaling and monitoring ap
    ```
 
 3. Access:
-   - Frontend: `http://localhost:4173`
+   - App: `http://localhost:4173` (nginx gateway routes `/` to frontend, `/api` and `/media` to backend)
    - Backend API docs: `http://localhost:8000/docs`
 
 ## Persistence
@@ -125,4 +125,14 @@ This does not include photos. Use `scripts/backup.sh` on the host for complete b
 ## Notes
 
 - Place production TLS/reverse proxy in front if required; app is compatible with Tailscale Serve.
+- With Tailscale Serve, point one HTTPS route at the gateway port (default `4173`). You do not need separate `/api` or `/media` routes in Tailscale — the built-in nginx gateway handles those.
+- Example Tailscale setup on the server:
+
+  ```bash
+  sudo tailscale serve reset
+  docker compose up -d --build
+  sudo tailscale serve --bg https://lilylog.your-tailnet.ts.net http://127.0.0.1:4173
+  ```
+
+  Set `WEBAUTHN_RP_ID` to your Tailscale hostname (domain only, no `https://`) and `WEBAUTHN_ORIGIN` to `https://lilylog.your-tailnet.ts.net`.
 - Filesystem media is not stored in PostgreSQL by design.
