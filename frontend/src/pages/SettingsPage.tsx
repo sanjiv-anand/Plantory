@@ -1,10 +1,11 @@
-import { Download, Fingerprint, Lock, MapPin, Moon, QrCode, Sun, UserPlus, UserRound } from 'lucide-react'
+import { Bot, Download, Fingerprint, Lock, MapPin, Moon, QrCode, Sun, UserPlus, UserRound } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
+import { AIMemorySettings } from '../components/AIMemorySettings'
 import { useAuth } from '../context/AuthContext'
 import { useTheme } from '../context/ThemeContext'
-import { usePlants } from '../hooks/useApi'
+import { useAIStatus, useAITest, usePlants, useUpdateAISettings } from '../hooks/useApi'
 import { downloadGardenExport } from '../lib/export'
 import {
   cancelDailyReminder,
@@ -22,6 +23,9 @@ export function SettingsPage() {
   const { theme, setTheme } = useTheme()
   const { status, lockApp, updateDisplayName, addHouseholdPasskey, busy } = useAuth()
   const { data: plants = [] } = usePlants()
+  const { data: aiStatus } = useAIStatus()
+  const updateAI = useUpdateAISettings()
+  const aiTest = useAITest()
   const [displayName, setDisplayName] = useState('')
   const [saved, setSaved] = useState(false)
   const [exporting, setExporting] = useState(false)
@@ -29,6 +33,7 @@ export function SettingsPage() {
   const [reminders, setReminders] = useState<ReminderSettings>(DEFAULT_REMINDERS)
   const [notifications, setNotifications] = useState<NotificationSettings>(loadNotificationSettings())
   const [pendingCount, setPendingCount] = useState(0)
+  const [aiTestResult, setAiTestResult] = useState<string | null>(null)
 
   useEffect(() => {
     if (status?.display_name && status.display_name !== 'Owner') {
@@ -121,6 +126,99 @@ export function SettingsPage() {
           {saved ? 'Saved!' : busy ? 'Saving...' : 'Save name'}
         </button>
       </section>
+
+      <section className="card p-5">
+        <div className="mb-4 flex items-center gap-3">
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl" style={{ background: 'var(--accent-soft)', color: 'var(--accent)' }}>
+            <Bot className="h-5 w-5" />
+          </div>
+          <div>
+            <h2 className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>Local AI</h2>
+            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+              {aiStatus?.privacy ?? 'Your plant data stays on your server.'}
+            </p>
+          </div>
+        </div>
+
+        <div className="mb-4 grid grid-cols-2 gap-2">
+          <MiniStat label="AI status" value={aiStatus?.online ? 1 : 0} display={aiStatus?.online ? 'Online' : 'Offline'} />
+          <MiniStat label="Model" value={0} display={aiStatus?.model ?? '—'} />
+        </div>
+
+        <p className="mb-3 text-xs leading-5" style={{ color: 'var(--text-muted)' }}>
+          Runtime: {aiStatus?.runtime ?? 'Local llama.cpp'}
+        </p>
+
+        <label className="mb-3 flex items-center justify-between text-sm">
+          <span style={{ color: 'var(--text-secondary)' }}>Enable Assistant</span>
+          <input
+            checked={aiStatus?.assistant_enabled ?? true}
+            disabled={updateAI.isPending}
+            onChange={(event) => void updateAI.mutateAsync({ assistant_enabled: event.target.checked })}
+            type="checkbox"
+          />
+        </label>
+        <label className="mb-3 flex items-center justify-between text-sm">
+          <span style={{ color: 'var(--text-secondary)' }}>Enable Daily Summaries</span>
+          <input
+            checked={aiStatus?.daily_summary_enabled ?? false}
+            disabled={updateAI.isPending}
+            onChange={(event) => void updateAI.mutateAsync({ daily_summary_enabled: event.target.checked })}
+            type="checkbox"
+          />
+        </label>
+        <label className="mb-3 flex items-center justify-between text-sm">
+          <span style={{ color: 'var(--text-secondary)' }}>Enable Plant Stories</span>
+          <input
+            checked={aiStatus?.story_enabled ?? true}
+            disabled={updateAI.isPending}
+            onChange={(event) => void updateAI.mutateAsync({ story_enabled: event.target.checked })}
+            type="checkbox"
+          />
+        </label>
+
+        <label className="label mb-2 block" htmlFor="ai-max-tokens">Maximum response length</label>
+        <input
+          className="input mb-3"
+          id="ai-max-tokens"
+          max={1024}
+          min={64}
+          onChange={(event) => void updateAI.mutateAsync({ max_tokens: Number(event.target.value) })}
+          type="number"
+          value={aiStatus?.max_tokens ?? 256}
+        />
+
+        <label className="label mb-2 block" htmlFor="ai-temperature">Temperature</label>
+        <input
+          className="input mb-4"
+          id="ai-temperature"
+          max={1.5}
+          min={0}
+          step={0.1}
+          onChange={(event) => void updateAI.mutateAsync({ temperature: Number(event.target.value) })}
+          type="number"
+          value={aiStatus?.temperature ?? 0.45}
+        />
+
+        <button
+          className="btn-secondary w-full"
+          disabled={aiTest.isPending}
+          onClick={() => {
+            setAiTestResult(null)
+            void aiTest.mutateAsync().then((result) => {
+              setAiTestResult(result.message ?? result.detail ?? (result.ok ? 'AI test passed.' : 'AI test failed.'))
+            }).catch((err: Error) => setAiTestResult(err.message))
+          }}
+          type="button"
+        >
+          {aiTest.isPending ? 'Testing AI...' : 'Test local AI connection'}
+        </button>
+        {aiTestResult && (
+          <p className="mt-3 text-sm" style={{ color: 'var(--text-secondary)' }}>{aiTestResult}</p>
+        )}
+      </section>
+
+      <AIMemorySettings />
 
       <section className="card p-5">
         <h2 className="mb-4 text-base font-semibold" style={{ color: 'var(--text-primary)' }}>Appearance</h2>
@@ -234,11 +332,11 @@ function ThemeButton({
   )
 }
 
-function MiniStat({ label, value }: { label: string; value: number }) {
+function MiniStat({ label, value, display }: { label: string; value: number; display?: string }) {
   return (
     <div className="card-inner px-4 py-3">
       <p className="text-[11px] uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>{label}</p>
-      <p className="mt-1 text-xl font-bold" style={{ color: 'var(--text-primary)' }}>{value}</p>
+      <p className="mt-1 text-xl font-bold" style={{ color: 'var(--text-primary)' }}>{display ?? value}</p>
     </div>
   )
 }

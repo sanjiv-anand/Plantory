@@ -13,6 +13,7 @@ import { PlantQrShare } from '../components/PlantQrShare'
 import { PlantWeekCalendar } from '../components/PlantWeekCalendar'
 import { WeatherInsights } from '../components/WeatherInsights'
 import { WeatherTrend } from '../components/WeatherTrend'
+import { useRegisterAssistantContext } from '../context/AssistantContext'
 import { useDeleteEntry, useEntries, useEvents, usePlant } from '../hooks/useApi'
 
 type Tab = 'journal' | 'insights' | 'events' | 'share'
@@ -33,13 +34,30 @@ export function PlantPage() {
 
   const entriesForSelectedDay = sorted.filter((entry) => isSameDay(new Date(entry.captured_at), selectedDate))
   const todayHasEntry = sorted.some((entry) => isToday(new Date(entry.captured_at)))
+  const activeJournalEntryId = tab === 'journal' && entriesForSelectedDay.length === 1
+    ? entriesForSelectedDay[0].id
+    : undefined
+  const currentPage = tab === 'journal'
+    ? `plant/journal/${format(selectedDate, 'yyyy-MM-dd')}`
+    : `plant/${tab}`
+
+  useRegisterAssistantContext(
+    plant
+      ? {
+          plantId: plant.id,
+          currentPage,
+          journalEntryId: activeJournalEntryId,
+          selectedDate: format(selectedDate, 'd MMM yyyy'),
+        }
+      : null,
+  )
 
   if (!plant) {
     return <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Loading...</p>
   }
 
   return (
-    <main className="space-y-4 pb-4">
+    <main className="plant-page-main space-y-4 pb-4">
       <div className="flex items-center justify-between">
         <Link to="/plants" className="inline-flex items-center gap-2 text-sm font-medium" style={{ color: 'var(--accent)' }}>
           <ArrowLeft className="h-4 w-4" />

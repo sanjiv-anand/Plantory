@@ -61,6 +61,147 @@ body {
   @apply flex-1 px-4 pb-28 pt-2;
 }
 
+.plant-page-main {
+  @apply pb-36;
+}
+
+.assistant-fab-wrap {
+  @apply pointer-events-none fixed bottom-0 left-1/2 z-[55] flex w-full max-w-[430px] -translate-x-1/2 justify-end px-4;
+  padding-bottom: calc(5.75rem + env(safe-area-inset-bottom, 0px));
+}
+
+.assistant-fab {
+  @apply pointer-events-auto relative inline-flex min-h-[52px] items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold shadow-lg transition active:scale-[0.97];
+  touch-action: manipulation;
+  background: var(--accent);
+  color: var(--accent-text);
+  box-shadow: 0 12px 32px color-mix(in oklab, var(--accent), transparent 55%);
+}
+
+.assistant-fab-label {
+  @apply hidden sm:inline;
+}
+
+.assistant-fab-dot {
+  @apply absolute -right-0.5 -top-0.5 h-3 w-3 rounded-full border-2;
+  border-color: var(--bg-page);
+  background: #f59e0b;
+}
+
+.assistant-backdrop {
+  @apply fixed inset-0 z-[58] border-0 bg-black/35 backdrop-blur-[2px];
+  touch-action: none;
+}
+
+.assistant-sheet {
+  @apply fixed bottom-0 left-1/2 z-[60] flex w-full max-w-[430px] -translate-x-1/2 flex-col overflow-hidden transition-[max-height,height,border-radius] duration-200 ease-out;
+  max-height: min(88dvh, 720px);
+  border-radius: 24px 24px 0 0;
+  border: 1px solid var(--border);
+  border-bottom: none;
+  background: var(--bg-page);
+  box-shadow: 0 -18px 50px rgba(0, 0, 0, 0.18);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.assistant-sheet-expanded {
+  top: max(0.75rem, env(safe-area-inset-top, 0px));
+  bottom: 0;
+  max-height: none;
+  height: calc(100dvh - max(0.75rem, env(safe-area-inset-top, 0px)));
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -24px 60px rgba(0, 0, 0, 0.22);
+}
+
+.assistant-sheet-handle {
+  @apply mx-auto mt-2 h-1.5 w-12 shrink-0 rounded-full;
+  background: color-mix(in oklab, var(--text-muted), transparent 35%);
+}
+
+.assistant-sheet-header {
+  @apply flex shrink-0 items-center justify-between gap-3 px-4 pb-3 pt-2;
+}
+
+.assistant-sheet-icon {
+  @apply flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.assistant-sheet-close {
+  @apply inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition active:scale-95;
+  touch-action: manipulation;
+  background: var(--bg-card-inner);
+  color: var(--text-secondary);
+}
+
+.assistant-sheet-body {
+  @apply min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-2;
+  -webkit-overflow-scrolling: touch;
+}
+
+.assistant-sheet-footer {
+  @apply shrink-0 border-t px-4 py-3;
+  border-color: var(--border);
+  background: color-mix(in oklab, var(--bg-page), var(--bg-card) 35%);
+}
+
+.assistant-info-card {
+  @apply mb-3 rounded-[18px] p-4;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+}
+
+.assistant-suggestions {
+  @apply flex gap-2 overflow-x-auto pb-1;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.assistant-suggestions::-webkit-scrollbar {
+  display: none;
+}
+
+.assistant-suggestion {
+  @apply shrink-0 rounded-full px-3 py-2.5 text-xs font-medium transition active:scale-[0.98];
+  touch-action: manipulation;
+  background: var(--bg-card-inner);
+  color: var(--text-secondary);
+}
+
+.assistant-suggestion:disabled {
+  @apply opacity-50;
+}
+
+.assistant-suggestion-active {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.assistant-bubble {
+  @apply max-w-[88%] rounded-2xl px-4 py-3 text-sm leading-6;
+}
+
+.assistant-bubble-user {
+  @apply ml-auto;
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+.assistant-bubble-bot {
+  @apply mr-auto;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
+
+.assistant-send-btn {
+  @apply inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl transition active:scale-95 disabled:opacity-50;
+  touch-action: manipulation;
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
 .card {
   border-radius: var(--radius-card);
   border: 1px solid var(--border);

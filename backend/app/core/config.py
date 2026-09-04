@@ -34,6 +34,22 @@ class Settings(BaseSettings):
     webauthn_origin: str = "http://localhost:5173"
     static_dir: str | None = None
 
+    llm_enabled: bool = True
+    llm_base_url: str = "http://llm:8080"
+    llm_model: str = "qwen3-0.6b"
+    llm_model_path: str = "/models/qwen3-0.6b-q4.gguf"
+    llm_model_display_name: str = "Qwen3-0.6B"
+    llm_timeout_seconds: int = 60
+    llm_health_timeout_seconds: int = 5
+    llm_max_tokens: int = 256
+    llm_temperature: float = 0.45
+    llm_max_concurrent_requests: int = 1
+    llm_system_prompt: str | None = None
+
+    ai_assistant_enabled: bool = True
+    ai_daily_summary_enabled: bool = False
+    ai_story_enabled: bool = True
+
     @property
     def photos_root_path(self) -> Path:
         return Path(self.photos_root)

@@ -17,6 +17,33 @@ services:
       timeout: 3s
       retries: 20
 
+  llm:
+    image: ghcr.io/ggml-org/llama.cpp:server
+    restart: unless-stopped
+    command:
+      - -m
+      - ${LLM_MODEL_PATH:-/models/Qwen_Qwen3-0.6B-Q4_K_M.gguf}
+      - --host
+      - "0.0.0.0"
+      - --port
+      - "8080"
+      - -c
+      - "${LLM_CONTEXT_SIZE:-2048}"
+      - -np
+      - "${LLM_PARALLEL:-1}"
+      - --threads
+      - "${LLM_THREADS:-4}"
+    volumes:
+      - ./models:/models:ro
+    expose:
+      - "8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
   backend:
     build:
       context: .
@@ -28,6 +55,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      llm:
+        condition: service_started
     environment:
       APP_NAME: ${APP_NAME:-LILYLOG}
       ENVIRONMENT: ${ENVIRONMENT:-production}
@@ -48,6 +77,19 @@ services:
       WEBAUTHN_RP_NAME: ${WEBAUTHN_RP_NAME:-LILYLOG}
       WEBAUTHN_ORIGIN: ${WEBAUTHN_ORIGIN:-http://localhost:4173}
       STATIC_DIR: /app/static
+      LLM_ENABLED: ${LLM_ENABLED:-true}
+      LLM_BASE_URL: ${LLM_BASE_URL:-http://llm:8080}
+      LLM_MODEL: ${LLM_MODEL:-qwen3-0.6b}
+      LLM_MODEL_PATH: ${LLM_MODEL_PATH:-/models/Qwen_Qwen3-0.6B-Q4_K_M.gguf}
+      LLM_MODEL_DISPLAY_NAME: ${LLM_MODEL_DISPLAY_NAME:-Qwen3-0.6B}
+      LLM_TIMEOUT_SECONDS: ${LLM_TIMEOUT_SECONDS:-60}
+      LLM_HEALTH_TIMEOUT_SECONDS: ${LLM_HEALTH_TIMEOUT_SECONDS:-5}
+      LLM_MAX_TOKENS: ${LLM_MAX_TOKENS:-256}
+      LLM_TEMPERATURE: ${LLM_TEMPERATURE:-0.45}
+      LLM_MAX_CONCURRENT_REQUESTS: ${LLM_MAX_CONCURRENT_REQUESTS:-1}
+      AI_ASSISTANT_ENABLED: ${AI_ASSISTANT_ENABLED:-true}
+      AI_DAILY_SUMMARY_ENABLED: ${AI_DAILY_SUMMARY_ENABLED:-false}
+      AI_STORY_ENABLED: ${AI_STORY_ENABLED:-true}
     ports:
       - "${GATEWAY_PORT:-4173}:8000"
       - "${BACKEND_PORT:-8000}:8000"

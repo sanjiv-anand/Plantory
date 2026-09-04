@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
+from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, HTTPException, UploadFile, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
@@ -10,9 +10,22 @@ from app.models.plant import Plant
 from app.models.weather_snapshot import WeatherSnapshot
 from app.schemas.journal import JournalEntryRead, JournalEntryUpdate
 from app.services.image_service import process_upload, to_fs_path
+from app.services.memory_service import MemoryService
 from app.services.weather_service import weather_client
 
 router = APIRouter()
+
+
+async def _extract_memories(entry_id: int) -> None:
+    import app.db.base  # noqa: F401
+    from app.db.session import SessionLocal
+
+    db = SessionLocal()
+    try:
+        await MemoryService(db).extract_from_journal_entry(entry_id)
+        db.commit()
+    finally:
+        db.close()
 
 
 def _optional_float(value: str | None) -> float | None:
@@ -49,6 +62,7 @@ def list_entries(plant_id: int, db: Session = Depends(get_db)) -> list[JournalEn
 @router.post("", response_model=JournalEntryRead, status_code=status.HTTP_201_CREATED)
 async def create_entry(
     plant_id: int,
+    background_tasks: BackgroundTasks,
     captured_at: datetime = Form(...),
     title: str | None = Form(None),
     memory: str | None = Form(None),
@@ -91,11 +105,18 @@ async def create_entry(
 
     db.commit()
     db.refresh(entry)
+    background_tasks.add_task(_extract_memories, entry.id)
     return entry
 
 
 @router.patch("/{entry_id}", response_model=JournalEntryRead)
-def update_entry(plant_id: int, entry_id: int, payload: JournalEntryUpdate, db: Session = Depends(get_db)) -> JournalEntry:
+def update_entry(
+    plant_id: int,
+    entry_id: int,
+    payload: JournalEntryUpdate,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
+) -> JournalEntry:
     _must_get_plant(db, plant_id)
     entry = db.get(JournalEntry, entry_id)
     if not entry or entry.plant_id != plant_id:
@@ -107,6 +128,7 @@ def update_entry(plant_id: int, entry_id: int, payload: JournalEntryUpdate, db: 
     db.add(entry)
     db.commit()
     db.refresh(entry)
+    background_tasks.add_task(_extract_memories, entry.id)
     return entry
 
 
@@ -120,5 +142,6 @@ def delete_entry(plant_id: int, entry_id: int, db: Session = Depends(get_db)) ->
         fs_path = to_fs_path(media_path)
         if fs_path.exists():
             fs_path.unlink()
+    MemoryService(db).invalidate_for_journal_entry(entry_id)
     db.delete(entry)
     db.commit()

@@ -77,8 +77,8 @@ export const client = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     }),
-  del: (path: string) =>
-    request(path, {
+  del: <T = void>(path: string) =>
+    request<T>(path, {
       method: 'DELETE',
     }),
   postForm: <T>(path: string, form: FormData) =>

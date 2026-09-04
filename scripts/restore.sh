@@ -24,9 +24,15 @@ usage() {
 Usage:
   scripts/restore.sh --db /path/to/lilylog_YYYYMMDD_HHMMSS.sql
   scripts/restore.sh --photos /path/to/photos_YYYYMMDD_HHMMSS.tar.gz
-  scripts/restore.sh --db ... --photos ...
+  scripts/restore.sh --models /path/to/models_YYYYMMDD_HHMMSS.tar.gz
+  scripts/restore.sh --db ... --photos ... --models ...
 
-Restores database dumps and/or photo archives created by scripts/backup.sh.
+Restores database dumps, photo archives, and/or local LLM models created by scripts/backup.sh.
+
+A full AI-aware restore uses all three:
+  --db      PostgreSQL (memories, chat history, AI settings, journals, plants)
+  --photos  Photo volume (includes assistant-logged entry placeholders)
+  --models  Host models/ directory (GGUF files for the local LLM)
 EOF
 }
 
@@ -37,6 +43,7 @@ PHOTOS_VOLUME="${COMPOSE_PROJECT_NAME}_photos_data"
 
 DB_FILE=""
 PHOTOS_FILE=""
+MODELS_FILE=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -46,6 +53,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --photos)
       PHOTOS_FILE="${2:-}"
+      shift 2
+      ;;
+    --models)
+      MODELS_FILE="${2:-}"
       shift 2
       ;;
     -h | --help)
@@ -60,7 +71,7 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if [[ -z "$DB_FILE" && -z "$PHOTOS_FILE" ]]; then
+if [[ -z "$DB_FILE" && -z "$PHOTOS_FILE" && -z "$MODELS_FILE" ]]; then
   usage
   exit 1
 fi
@@ -88,6 +99,17 @@ if [[ -n "$PHOTOS_FILE" ]]; then
     -v "${PHOTOS_VOLUME}:/data" \
     -v "$(cd "$(dirname "$PHOTOS_FILE")" && pwd):/backup:ro" \
     alpine sh -c "cd /data && tar xzf /backup/$(basename "$PHOTOS_FILE")"
+fi
+
+if [[ -n "$MODELS_FILE" ]]; then
+  if [[ ! -f "$MODELS_FILE" ]]; then
+    echo "Models backup not found: $MODELS_FILE" >&2
+    exit 1
+  fi
+  mkdir -p "${PROJECT_DIR}/models"
+  echo "Restoring LLM models to ${PROJECT_DIR}/models"
+  tar xzf "$MODELS_FILE" -C "${PROJECT_DIR}/models"
+  echo "Restart LLM to pick up models: docker compose restart llm"
 fi
 
 echo "$(date -Iseconds) restore complete"
