@@ -8,5 +8,5 @@ backend/.ruff_cache/
 frontend/node_modules/
 frontend/dist/
 data/
-models/
+/models/
 *.gguf
