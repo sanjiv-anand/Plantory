@@ -19,10 +19,10 @@ read_env() {
   printf '%s' "$default"
 }
 
-COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-$(read_env COMPOSE_PROJECT_NAME lilylog)}"
-POSTGRES_DB="${POSTGRES_DB:-$(read_env POSTGRES_DB lilylog)}"
+COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-$(read_env COMPOSE_PROJECT_NAME plantory)}"
+POSTGRES_DB="${POSTGRES_DB:-$(read_env POSTGRES_DB plantory)}"
 POSTGRES_USER="${POSTGRES_USER:-$(read_env POSTGRES_USER postgres)}"
-BACKUP_DIR="${BACKUP_HOST_DIR:-${BACKUP_DIR:-$HOME/lilylog-backups}}"
+BACKUP_DIR="${BACKUP_HOST_DIR:-${BACKUP_DIR:-$HOME/plantory-backups}}"
 RETENTION_DAYS="${BACKUP_RETENTION_DAYS:-14}"
 BACKUP_INCLUDE_MODELS="${BACKUP_INCLUDE_MODELS:-true}"
 PHOTOS_VOLUME="${COMPOSE_PROJECT_NAME}_photos_data"
@@ -41,7 +41,7 @@ if ! docker volume inspect "$PHOTOS_VOLUME" >/dev/null 2>&1; then
   exit 1
 fi
 
-DB_FILE="${BACKUP_DIR}/lilylog_${TIMESTAMP}.sql"
+DB_FILE="${BACKUP_DIR}/plantory_${TIMESTAMP}.sql"
 PHOTOS_FILE="${BACKUP_DIR}/photos_${TIMESTAMP}.tar.gz"
 MODELS_FILE=""
 MANIFEST_FILE="${BACKUP_DIR}/manifest_${TIMESTAMP}.json"
@@ -95,12 +95,12 @@ EOF
 if [[ "$RETENTION_DAYS" -gt 0 ]]; then
   echo "Removing backups older than ${RETENTION_DAYS} days"
   find "$BACKUP_DIR" -type f \( \
-    -name 'lilylog_*.sql' -o \
+    -name 'plantory_*.sql' -o \
     -name 'photos_*.tar.gz' -o \
     -name 'models_*.tar.gz' -o \
     -name 'manifest_*.json' \
     \) -mtime +"$RETENTION_DAYS" -delete
 fi
 
-echo "$(date -Iseconds) backup complete: lilylog_${TIMESTAMP}"
+echo "$(date -Iseconds) backup complete: plantory_${TIMESTAMP}"
 echo "Manifest: ${MANIFEST_FILE}"

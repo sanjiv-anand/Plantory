@@ -23,7 +23,7 @@ from app.models.app_user import AppUser
 from app.models.auth_challenge import AuthChallenge
 from app.models.passkey import PasskeyCredential
 
-SESSION_COOKIE = "lilylog_session"
+SESSION_COOKIE = "plantory_session"
 CHALLENGE_TTL = timedelta(minutes=5)
 
 

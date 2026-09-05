@@ -71,7 +71,7 @@ export function AIMemorySettings() {
         <div>
           <h2 className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>AI Memory</h2>
           <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-            Things LilyLog remembers to personalize your assistant.
+            Things Plantory remembers to personalize your assistant.
           </p>
         </div>
       </div>

@@ -25,5 +25,5 @@ export function downloadJson(data: unknown, filename: string) {
 export async function downloadGardenExport() {
   const data = await exportGarden()
   const date = new Date().toISOString().slice(0, 10)
-  downloadJson(data, `lilylog-garden-${date}.json`)
+  downloadJson(data, `plantory-garden-${date}.json`)
 }

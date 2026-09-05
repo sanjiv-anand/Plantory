@@ -3,7 +3,7 @@ services:
     image: postgres:16-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-lilylog}
+      POSTGRES_DB: ${POSTGRES_DB:-plantory}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       POSTGRES_HOST_AUTH_METHOD: trust
@@ -12,7 +12,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-lilylog}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-plantory}"]
       interval: 5s
       timeout: 3s
       retries: 20
@@ -58,9 +58,9 @@ services:
       llm:
         condition: service_started
     environment:
-      APP_NAME: ${APP_NAME:-LILYLOG}
+      APP_NAME: ${APP_NAME:-Plantory}
       ENVIRONMENT: ${ENVIRONMENT:-production}
-      DATABASE_URL: ${DATABASE_URL:-postgresql+psycopg:///lilylog?host=postgres&user=postgres}
+      DATABASE_URL: ${DATABASE_URL:-postgresql+psycopg:///plantory?host=postgres&user=postgres}
       CORS_ORIGINS: ${CORS_ORIGINS:-["http://localhost:4173","http://localhost:5173"]}
       PHOTOS_ROOT: ${PHOTOS_ROOT:-/data/photos}
       PHOTOS_PUBLIC_BASE: ${PHOTOS_PUBLIC_BASE:-/media}
@@ -70,11 +70,11 @@ services:
       WEATHER_API_URL: ${WEATHER_API_URL:-https://api.open-meteo.com/v1/forecast}
       WEATHER_TIMEOUT_SECONDS: ${WEATHER_TIMEOUT_SECONDS:-10}
       BACKUP_DIR: ${BACKUP_DIR:-/data/backups}
-      POSTGRES_DB: ${POSTGRES_DB:-lilylog}
+      POSTGRES_DB: ${POSTGRES_DB:-plantory}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       SECRET_KEY: ${SECRET_KEY:-change-me-in-production}
       WEBAUTHN_RP_ID: ${WEBAUTHN_RP_ID:-localhost}
-      WEBAUTHN_RP_NAME: ${WEBAUTHN_RP_NAME:-LILYLOG}
+      WEBAUTHN_RP_NAME: ${WEBAUTHN_RP_NAME:-Plantory}
       WEBAUTHN_ORIGIN: ${WEBAUTHN_ORIGIN:-http://localhost:4173}
       STATIC_DIR: /app/static
       LLM_ENABLED: ${LLM_ENABLED:-true}

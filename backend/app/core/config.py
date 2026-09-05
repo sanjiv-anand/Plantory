@@ -7,11 +7,11 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
-    app_name: str = "LILYLOG"
+    app_name: str = "Plantory"
     environment: str = "development"
     cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:5173", "http://localhost:4173", "http://localhost:3000"])
 
-    database_url: str = "postgresql+psycopg:///lilylog?host=postgres&user=postgres"
+    database_url: str = "postgresql+psycopg:///plantory?host=postgres&user=postgres"
 
     photos_root: str = "/data/photos"
     photos_public_base: str = "/media"
@@ -30,7 +30,7 @@ class Settings(BaseSettings):
     secret_key: str = "change-me-in-production"
     session_days: int = 14
     webauthn_rp_id: str = "localhost"
-    webauthn_rp_name: str = "LILYLOG"
+    webauthn_rp_name: str = "Plantory"
     webauthn_origin: str = "http://localhost:5173"
     static_dir: str | None = None
 

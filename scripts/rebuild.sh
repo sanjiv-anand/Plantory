@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Rebuild LilyLog after code changes: images, migrations, optional model download, optional AI memory rebuild.
+# Rebuild Plantory after code changes: images, migrations, optional model download, optional AI memory rebuild.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -15,7 +15,7 @@ usage() {
   cat <<'EOF'
 Usage: scripts/rebuild.sh [options]
 
-Rebuild and restart the LilyLog Docker stack (runs Alembic migrations on backend start).
+Rebuild and restart the Plantory Docker stack (runs Alembic migrations on backend start).
 
 Options:
   --download-model     Download the local GGUF model if missing

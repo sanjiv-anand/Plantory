@@ -22,7 +22,7 @@ read_env() {
 usage() {
   cat <<'EOF'
 Usage:
-  scripts/restore.sh --db /path/to/lilylog_YYYYMMDD_HHMMSS.sql
+  scripts/restore.sh --db /path/to/plantory_YYYYMMDD_HHMMSS.sql
   scripts/restore.sh --photos /path/to/photos_YYYYMMDD_HHMMSS.tar.gz
   scripts/restore.sh --models /path/to/models_YYYYMMDD_HHMMSS.tar.gz
   scripts/restore.sh --db ... --photos ... --models ...
@@ -36,8 +36,8 @@ A full AI-aware restore uses all three:
 EOF
 }
 
-COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-$(read_env COMPOSE_PROJECT_NAME lilylog)}"
-POSTGRES_DB="${POSTGRES_DB:-$(read_env POSTGRES_DB lilylog)}"
+COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-$(read_env COMPOSE_PROJECT_NAME plantory)}"
+POSTGRES_DB="${POSTGRES_DB:-$(read_env POSTGRES_DB plantory)}"
 POSTGRES_USER="${POSTGRES_USER:-$(read_env POSTGRES_USER postgres)}"
 PHOTOS_VOLUME="${COMPOSE_PROJECT_NAME}_photos_data"
 

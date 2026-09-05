@@ -94,7 +94,7 @@ export function SettingsPage() {
     cancelDailyReminder()
     if (merged.enabled) {
       scheduleDailyReminder(merged.dailyReminderHour, () => {
-        showLocalNotification('LILYLOG', 'Time for a quick plant check-in and photo.')
+        showLocalNotification('Plantory', 'Time for a quick plant check-in and photo.')
       })
     }
   }

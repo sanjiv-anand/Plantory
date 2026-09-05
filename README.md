@@ -1,6 +1,6 @@
-# LILYLOG
+# Plantory
 
-LILYLOG is a self-hosted, production-oriented plant journaling and monitoring app with multi-plant tracking, daily photo journaling, weather snapshots, timeline/calendar history, and Docker-first deployment.
+Plantory is a self-hosted, production-oriented plant journaling and monitoring app with multi-plant tracking, daily photo journaling, weather snapshots, timeline/calendar history, and Docker-first deployment.
 
 ## Stack
 
@@ -20,7 +20,7 @@ LILYLOG is a self-hosted, production-oriented plant journaling and monitoring ap
 - Plant timeline, calendar history, photo comparison, and weather trend summaries.
 - Entry deletion support.
 - PWA support for installable mobile experience.
-- **Local AI Assistant** — private LilyLog Assistant powered by llama.cpp and a small on-server GGUF model (no cloud LLM APIs).
+- **Local AI Assistant** — private Plantory Assistant powered by llama.cpp and a small on-server GGUF model (no cloud LLM APIs).
 
 ## Quick start
 
@@ -91,14 +91,14 @@ Migrations run automatically on backend start; `rebuild.sh` also runs `alembic u
 
 ## Backups
 
-LILYLOG stores photos on disk, LLM models on the host, and metadata (including AI memories) in PostgreSQL — a **full** backup includes all three.
+Plantory stores photos on disk, LLM models on the host, and metadata (including AI memories) in PostgreSQL — a **full** backup includes all three.
 
 ### What is backed up
 
 | Component | Where it lives | Backup file |
 |-----------|----------------|-------------|
-| Plants, journals, events | PostgreSQL | `lilylog_*.sql` |
-| AI settings, memories, chat history, story cache | PostgreSQL (same dump) | `lilylog_*.sql` |
+| Plants, journals, events | PostgreSQL | `plantory_*.sql` |
+| AI settings, memories, chat history, story cache | PostgreSQL (same dump) | `plantory_*.sql` |
 | Plant photos + assistant placeholders | `photos_data` volume | `photos_*.tar.gz` |
 | Local GGUF model | `./models/` on host | `models_*.tar.gz` (optional) |
 
@@ -113,9 +113,9 @@ chmod +x scripts/backup.sh scripts/restore.sh
 ./scripts/backup.sh
 ```
 
-This writes timestamped files to `~/lilylog-backups` by default:
+This writes timestamped files to `~/plantory-backups` by default:
 
-- `lilylog_YYYYMMDD_HHMMSS.sql` — database dump (includes AI tables)
+- `plantory_YYYYMMDD_HHMMSS.sql` — database dump (includes AI tables)
 - `photos_YYYYMMDD_HHMMSS.tar.gz` — photo volume archive
 - `models_YYYYMMDD_HHMMSS.tar.gz` — GGUF model(s), if present in `models/`
 - `manifest_YYYYMMDD_HHMMSS.json` — backup manifest
@@ -137,7 +137,7 @@ crontab -e
 Example: run every night at 2:00 AM:
 
 ```cron
-0 2 * * * /path/to/LilyLog/scripts/backup.sh >> /var/log/lilylog-backup.log 2>&1
+0 2 * * * /path/to/Plantory/scripts/backup.sh >> /var/log/plantory-backup.log 2>&1
 ```
 
 On macOS, prefer `launchd` if the machine may sleep.
@@ -148,9 +148,9 @@ Optional: sync `BACKUP_HOST_DIR` off the server with `rsync`, `rclone`, or `rest
 
 ```bash
 ./scripts/restore.sh \
-  --db ~/lilylog-backups/lilylog_20260903_020000.sql \
-  --photos ~/lilylog-backups/photos_20260903_020000.tar.gz \
-  --models ~/lilylog-backups/models_20260903_020000.tar.gz
+  --db ~/plantory-backups/plantory_20260903_020000.sql \
+  --photos ~/plantory-backups/photos_20260903_020000.tar.gz \
+  --models ~/plantory-backups/models_20260903_020000.tar.gz
 ```
 
 Restore all three together when recovering from a full loss. After restoring models, restart the LLM:
@@ -195,15 +195,15 @@ This does not include photos. Use `scripts/backup.sh` on the host for complete b
 
 ## Local AI Assistant
 
-LilyLog includes an optional **LilyLog Assistant** that runs entirely on your server using [llama.cpp](https://github.com/ggml-org/llama.cpp). The browser never talks to the LLM directly — only the backend does, over the internal Docker network.
+Plantory includes an optional **Plantory Assistant** that runs entirely on your server using [llama.cpp](https://github.com/ggml-org/llama.cpp). The browser never talks to the LLM directly — only the backend does, over the internal Docker network.
 
 ### Architecture
 
 ```
-iPhone → Tailscale Serve → LilyLog (frontend + backend) → llm service → GGUF model
+iPhone → Tailscale Serve → Plantory (frontend + backend) → llm service → GGUF model
 ```
 
-The `llm` container is **not** exposed to the host or Tailscale. If the LLM is offline, the rest of LilyLog keeps working and the UI shows **Assistant unavailable**.
+The `llm` container is **not** exposed to the host or Tailscale. If the LLM is offline, the rest of Plantory keeps working and the UI shows **Assistant unavailable**.
 
 ### 1. Download a small GGUF model
 
@@ -276,8 +276,8 @@ Or open **Settings → Local AI** in the app.
 
 ### 5. Use from iPhone PWA
 
-1. Serve LilyLog through Tailscale (port `4173` only — **do not** expose the LLM port).
-2. Open a plant page and tap **Ask LilyLog**.
+1. Serve Plantory through Tailscale (port `4173` only — **do not** expose the LLM port).
+2. Open a plant page and tap **Ask Plantory**.
 3. Use suggested questions or type your own.
 
 ### Resource expectations (CPU, no GPU required)
@@ -294,7 +294,7 @@ Or open **Settings → Local AI** in the app.
 
 - All inference runs locally in Docker on your machine.
 - Plant data is not sent to OpenAI, Anthropic, or other cloud LLM APIs.
-- The only external API LilyLog may still use is **Open-Meteo** for weather (existing feature).
+- The only external API Plantory may still use is **Open-Meteo** for weather (existing feature).
 
 ### Troubleshooting
 
@@ -322,8 +322,8 @@ pytest
   ```bash
   sudo tailscale serve reset
   docker compose up -d --build
-  sudo tailscale serve --bg https://lilylog.your-tailnet.ts.net http://127.0.0.1:4173
+  sudo tailscale serve --bg https://plantory.your-tailnet.ts.net http://127.0.0.1:4173
   ```
 
-  Set `WEBAUTHN_RP_ID` to your Tailscale hostname (domain only, no `https://`) and `WEBAUTHN_ORIGIN` to `https://lilylog.your-tailnet.ts.net`.
+  Set `WEBAUTHN_RP_ID` to your Tailscale hostname (domain only, no `https://`) and `WEBAUTHN_ORIGIN` to `https://plantory.your-tailnet.ts.net`.
 - Filesystem media is not stored in PostgreSQL by design.

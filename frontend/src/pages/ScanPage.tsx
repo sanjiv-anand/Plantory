@@ -52,7 +52,7 @@ export function ScanPage() {
           <QrCode className="h-8 w-8" />
         </div>
         <p className="text-sm leading-6" style={{ color: 'var(--text-secondary)' }}>
-          Point your phone camera at a LILYLOG plant tag. The QR code opens the plant journal automatically.
+          Point your phone camera at a Plantory plant tag. The QR code opens the plant journal automatically.
         </p>
       </section>
 

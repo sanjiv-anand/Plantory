@@ -10,7 +10,7 @@ type ThemeContextValue = {
 
 const ThemeContext = createContext<ThemeContextValue | null>(null)
 
-const STORAGE_KEY = 'lilylog-theme'
+const STORAGE_KEY = 'plantory-theme'
 
 function getInitialTheme(): Theme {
   const stored = localStorage.getItem(STORAGE_KEY)

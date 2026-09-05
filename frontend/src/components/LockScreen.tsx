@@ -28,7 +28,7 @@ export function LockScreen() {
       <div className="flex flex-1 flex-col justify-center px-6 pb-10 pt-16">
         <div className="card p-6 text-center">
           <img
-            alt="LilyLog"
+            alt="Plantory"
             className="mx-auto mb-5 h-20 w-20 rounded-[22%] shadow-lg"
             height={80}
             src="/icon-192.png"
@@ -36,7 +36,7 @@ export function LockScreen() {
           />
 
           <h1 className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
-            {needsSetup ? 'Welcome to LilyLog' : 'Unlock LilyLog'}
+            {needsSetup ? 'Welcome to Plantory' : 'Unlock Plantory'}
           </h1>
           <p className="mt-3 text-sm leading-6" style={{ color: 'var(--text-secondary)' }}>
             {needsSetup
@@ -55,7 +55,7 @@ export function LockScreen() {
                 className="input"
                 id="display-name"
                 onChange={(event) => setDisplayName(event.target.value)}
-                placeholder="e.g. Lily"
+                placeholder="e.g. Sam"
                 type="text"
                 value={displayName}
               />

@@ -19,7 +19,7 @@ export function PlantQrShare({ plantId, plantName }: Props) {
 
   async function shareLink() {
     if (navigator.share) {
-      await navigator.share({ title: plantName, text: `Open ${plantName} in LILYLOG`, url })
+      await navigator.share({ title: plantName, text: `Open ${plantName} in Plantory`, url })
       return
     }
     await navigator.clipboard.writeText(url)

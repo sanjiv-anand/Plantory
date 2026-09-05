@@ -185,13 +185,13 @@ export function PlantAssistant({
       {!open && (
         <div className="assistant-fab-wrap">
           <button
-            aria-label="Ask LilyLog"
+            aria-label="Ask Plantory"
             className="assistant-fab"
             onClick={() => setOpen(true)}
             type="button"
           >
             <MessageCircle className="h-6 w-6" />
-            <span className="assistant-fab-label">Ask LilyLog</span>
+            <span className="assistant-fab-label">Ask Plantory</span>
             {unavailable && <span aria-hidden="true" className="assistant-fab-dot" />}
           </button>
         </div>
@@ -207,7 +207,7 @@ export function PlantAssistant({
           />
 
           <section
-            aria-label="LilyLog Assistant"
+            aria-label="Plantory Assistant"
             aria-modal="true"
             className={['assistant-sheet', expanded ? 'assistant-sheet-expanded' : ''].join(' ')}
             role="dialog"
@@ -221,7 +221,7 @@ export function PlantAssistant({
                 </div>
                 <div className="min-w-0">
                   <p className="truncate text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
-                    Ask LilyLog
+                    Ask Plantory
                   </p>
                   <p className="truncate text-xs" style={{ color: 'var(--text-secondary)' }}>
                     {headerSubtitle}
@@ -273,7 +273,7 @@ export function PlantAssistant({
               {noPlants && (
                 <section className="assistant-info-card mb-3">
                   <p className="text-sm leading-6" style={{ color: 'var(--text-secondary)' }}>
-                    Add your first plant to chat with LilyLog about your garden.
+                    Add your first plant to chat with Plantory about your garden.
                   </p>
                   <Link className="btn-primary mt-3 inline-flex w-full justify-center" to="/add" onClick={() => setOpen(false)}>
                     Add a plant

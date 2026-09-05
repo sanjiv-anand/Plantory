@@ -5,7 +5,7 @@ export type ReminderSettings = {
   enabled: boolean
 }
 
-const STORAGE_KEY = 'lilylog-reminders'
+const STORAGE_KEY = 'plantory-reminders'
 
 export const DEFAULT_REMINDERS: ReminderSettings = {
   wateringDays: 3,

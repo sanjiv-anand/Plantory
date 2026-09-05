@@ -125,7 +125,7 @@ class PlantAssistantService:
     ) -> dict | AsyncIterator[str]:
         ai_settings = self.get_settings()
         if not ai_settings.assistant_enabled:
-            return self._error("AI_DISABLED", "LilyLog Assistant is disabled.")
+            return self._error("AI_DISABLED", "Plantory Assistant is disabled.")
 
         log_service = AssistantLogService(self.db)
         applied_logs = log_service.try_apply_from_message(plant_id, question)
@@ -189,11 +189,11 @@ class PlantAssistantService:
                 "actions_applied": [self._serialize_log_action(item) for item in applied_logs],
             }
         except LLMUnavailableError:
-            return self._error("AI_UNAVAILABLE", "LilyLog Assistant is currently unavailable.")
+            return self._error("AI_UNAVAILABLE", "Plantory Assistant is currently unavailable.")
         except LLMTimeoutError:
-            return self._error("AI_TIMEOUT", "LilyLog Assistant timed out. Try a shorter question.")
+            return self._error("AI_TIMEOUT", "Plantory Assistant timed out. Try a shorter question.")
         except LLMResponseError:
-            return self._error("AI_ERROR", "LilyLog Assistant could not produce a response.")
+            return self._error("AI_ERROR", "Plantory Assistant could not produce a response.")
 
     async def generate_daily_summary(self, plant_id: int, target_date: date | None = None) -> dict:
         ai_settings = self.get_settings()
@@ -235,7 +235,7 @@ class PlantAssistantService:
             assert isinstance(summary, str)
             return {"date": day.isoformat(), "summary": summary}
         except (LLMUnavailableError, LLMTimeoutError, LLMResponseError):
-            return self._error("AI_UNAVAILABLE", "LilyLog Assistant is currently unavailable.")
+            return self._error("AI_UNAVAILABLE", "Plantory Assistant is currently unavailable.")
 
     async def generate_story(self, plant_id: int, *, force: bool = False) -> dict:
         ai_settings = self.get_settings()
@@ -278,16 +278,16 @@ class PlantAssistantService:
             self.db.commit()
             return {"story": story, "cached": False}
         except (LLMUnavailableError, LLMTimeoutError, LLMResponseError):
-            return self._error("AI_UNAVAILABLE", "LilyLog Assistant is currently unavailable.")
+            return self._error("AI_UNAVAILABLE", "Plantory Assistant is currently unavailable.")
 
     async def test_connection(self) -> dict:
         if not await self.llm.is_available():
-            return self._error("AI_UNAVAILABLE", "LilyLog Assistant is currently unavailable.")
+            return self._error("AI_UNAVAILABLE", "Plantory Assistant is currently unavailable.")
         try:
             reply = await self.llm.chat_completion(
                 [
                     {"role": "system", "content": "You are a test assistant."},
-                    {"role": "user", "content": "Reply with exactly: LilyLog local AI is online."},
+                    {"role": "user", "content": "Reply with exactly: Plantory local AI is online."},
                 ],
                 max_tokens=32,
                 temperature=0,

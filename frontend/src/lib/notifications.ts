@@ -1,4 +1,4 @@
-const STORAGE_KEY = 'lilylog-notifications'
+const STORAGE_KEY = 'plantory-notifications'
 
 export type NotificationSettings = {
   enabled: boolean

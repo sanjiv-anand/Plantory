@@ -54,7 +54,7 @@ async def test_llm_successful_response():
     service = LLMService()
     response = MagicMock()
     response.status_code = 200
-    response.json.return_value = {"choices": [{"message": {"content": "Hello from LilyLog."}}]}
+    response.json.return_value = {"choices": [{"message": {"content": "Hello from Plantory."}}]}
     with patch("app.services.llm_service.settings") as mock_settings:
         mock_settings.llm_enabled = True
         mock_settings.llm_base_url = "http://llm:8080"
@@ -65,7 +65,7 @@ async def test_llm_successful_response():
         mock_settings.llm_max_concurrent_requests = 1
         with patch("httpx.AsyncClient.post", return_value=response):
             result = await service.chat_completion([{"role": "user", "content": "hi"}])
-    assert result == "Hello from LilyLog."
+    assert result == "Hello from Plantory."
 
 
 @pytest.mark.asyncio

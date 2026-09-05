@@ -21,8 +21,8 @@ export default defineConfig({
         ],
       },
       manifest: {
-        name: 'LILYLOG',
-        short_name: 'LILYLOG',
+        name: 'Plantory',
+        short_name: 'Plantory',
         description: 'Plant journaling and garden monitoring',
         theme_color: '#274b37',
         background_color: '#274b37',

@@ -1,4 +1,4 @@
-const DB_NAME = 'lilylog-offline'
+const DB_NAME = 'plantory-offline'
 const STORE = 'pending-entries'
 const DB_VERSION = 1
 

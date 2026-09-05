@@ -189,7 +189,7 @@ def ensure_assistant_placeholder() -> dict[str, str]:
         img = Image.new("RGB", (800, 600), color=(236, 245, 233))
         draw = ImageDraw.Draw(img)
         draw.text((36, 36), "Assistant log entry", fill=(56, 102, 65))
-        draw.text((36, 72), "No photo — logged via LilyLog Assistant", fill=(86, 130, 95))
+        draw.text((36, 72), "No photo — logged via Plantory Assistant", fill=(86, 130, 95))
         img.save(rel, format="JPEG", quality=85, optimize=True)
     media = f"{settings.photos_public_base}/assistant/placeholder.jpg"
     return {

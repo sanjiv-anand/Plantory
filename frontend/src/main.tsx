@@ -15,7 +15,7 @@ async function syncOfflineEntries() {
     client.postForm(`/plants/${plantId}/entries`, form),
   )
   if (synced > 0) {
-    showLocalNotification('LILYLOG', `${synced} offline entr${synced > 1 ? 'ies' : 'y'} synced.`)
+    showLocalNotification('Plantory', `${synced} offline entr${synced > 1 ? 'ies' : 'y'} synced.`)
   }
 }
 
@@ -31,7 +31,7 @@ function NotificationBootstrap() {
     const settings = loadNotificationSettings()
     if (settings.enabled) {
       scheduleDailyReminder(settings.dailyReminderHour, () => {
-        showLocalNotification('LILYLOG', 'Time for a quick plant check-in and photo.')
+        showLocalNotification('Plantory', 'Time for a quick plant check-in and photo.')
       })
     }
   }, [])

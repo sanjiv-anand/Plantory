@@ -5,7 +5,7 @@ import { useAssistantContext } from '../context/AssistantContext'
 import { usePlant, usePlants } from '../hooks/useApi'
 import { PlantAssistant } from './PlantAssistant'
 
-const LAST_PLANT_KEY = 'lilylog-assistant-plant-id'
+const LAST_PLANT_KEY = 'plantory-assistant-plant-id'
 
 function readStoredPlantId(): number | null {
   try {
