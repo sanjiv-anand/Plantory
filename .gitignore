@@ -10,3 +10,4 @@ frontend/dist/
 data/
 /models/
 *.gguf
+.DS_Store
